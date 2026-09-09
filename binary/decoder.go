@@ -193,6 +193,23 @@ func (d *Decoder) ReadInt64() int64 {
 	return int64(d.ReadUint64())
 }
 
+func (d *Decoder) ReadUint128() Uint128 {
+	p := d.pos
+	if d.err != nil || len(d.data)-p < Uint128Size {
+		d.fail(ErrUnexpectedEOF, Uint128Size)
+		return Uint128{}
+	}
+	d.pos = p + Uint128Size
+	return Uint128{
+		Lo: binary.LittleEndian.Uint64(d.data[p:]),
+		Hi: binary.LittleEndian.Uint64(d.data[p+8:]),
+	}
+}
+
+func (d *Decoder) ReadInt128() Int128 {
+	return Int128(d.ReadUint128())
+}
+
 // ReadBool reads a Borsh bool: a single byte that must be 0 or 1.
 func (d *Decoder) ReadBool() bool {
 	p := d.pos

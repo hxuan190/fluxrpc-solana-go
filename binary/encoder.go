@@ -104,6 +104,18 @@ func (e *Encoder) WriteUint64(v uint64) {
 	e.data = binary.LittleEndian.AppendUint64(e.data, v)
 }
 
+func (e *Encoder) WriteUint128(v Uint128) {
+	if e.err != nil {
+		return
+	}
+	e.data = binary.LittleEndian.AppendUint64(e.data, v.Lo)
+	e.data = binary.LittleEndian.AppendUint64(e.data, v.Hi)
+}
+
+func (e *Encoder) WriteInt128(v Int128) {
+	e.WriteUint128(Uint128(v))
+}
+
 // WriteInt64 writes a little-endian int64 (Borsh i64, e.g. Unix timestamps).
 func (e *Encoder) WriteInt64(v int64) {
 	e.WriteUint64(uint64(v))
